@@ -4,7 +4,7 @@ require 'rubygems'
 require 'rubygems/dependency_installer'
 
 require 'ruby-debug'
-require 'erubis'
+require 'erb'
 
 package = ARGV.first || 'activerecord'
 
@@ -41,7 +41,7 @@ class Ebuild
   end
 
   def write
-    output = eruby.evaluate(self)
+    output = eruby.result( binding )
     FileUtils.mkdir_p('ebuilds')
     File.open("ebuilds/#{filename}", 'w') {|f| f.write(output) }
   end
@@ -50,8 +50,7 @@ class Ebuild
 
   def eruby
     unless @eruby
-      input = File.read('ebuild.eruby')
-      @eruby = Erubis::Eruby.new(input)
+      @eruby = ERB.new( File.read( 'ebuild.eruby' ) )
     end
     @eruby
   end

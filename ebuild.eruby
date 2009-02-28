@@ -14,10 +14,10 @@ KEYWORDS="~amd64-linux ~ia64-linux ~x86-linux ~ppc-macos ~x86-macos ~sparc-solar
 IUSE=""
 RESTRICT="test"
 
-<%- unless spec.dependencies.empty? -%>
+<% unless spec.dependencies.empty? %>
 DEPEND="
-  <%- spec.dependencies.each do |dependency| -%>
-  <%= atom_of(dependency) %>
-  <%- end -%>
+  <% spec.dependencies.each do |dependency| %>
+    <%= atom_of(dependency) %>
+  <% end %>
 "
-<%- end -%>
+<% end %>
