@@ -10,26 +10,51 @@
 require 'rubygems'
 require 'emerge-gem'
 
-package = ARGV.first || 'activerecord'
+argv = ARGV.dup
 
-gems_to_lookup = [package]
-ebuilds = {}
-until gems_to_lookup.empty?
-  next_package = gems_to_lookup.shift
+gems = []
+emerge_options = []
+portage_base_dir = '/usr/local/portage'
+portage_path = 'dev-ruby'
 
-  unless ebuilds.has_key?(next_package)
-    puts "Gathering info about #{next_package}..."
-
-    ebuilds[next_package] = Ebuild.create_from_spec_lookup(next_package)
+collecting_emerge_options = false
+while argv.any?
+  arg = argv.shift
+  case arg
+  when '--'
+    collecting_emerge_options = true
+  when '--portage-base-dir'
+    portage_base_dir = arg
+  when '--portage-path'
+    portage_path = arg
   else
-    puts "Already know about #{next_package}"
+    if collecting_emerge_options
+      emerge_options << arg
+    else
+      gems << arg
+    end
+  end
+end
+
+ebuild_dest ||= "#{portage_base_dir}/#{portage_path}"
+
+package = ARGV.first
+
+ebuilds = {}
+while gems.any?
+  next_package = gems.shift
+
+  if ! ebuilds[ next_package ]
+    puts "Gathering info about #{next_package}..."
+    ebuilds[ next_package ] = Ebuild.create_from_spec_lookup( next_package )
+  else
+    puts "(already know about #{next_package})"
   end
 
-  ebuilds[next_package].spec.dependencies.each do |dependency|
-    unless ebuilds.has_key? dependency.name
-      puts "Need to lookup dependency #{dependency.name}"
-      gems_to_lookup.push(dependency.name)
-    end
+  ebuilds[ next_package ].spec.dependencies.each do |dependency|
+    next  if ebuilds[ dependency.name ]
+    puts "Need to lookup dependency #{dependency.name}"
+    gems.push dependency.name
   end
 end
 
