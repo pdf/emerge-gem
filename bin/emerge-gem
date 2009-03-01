@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby
+
+# Where to put under /usr/local/portage ?
+
+# mv ebuild there.
+
+# ebuild <path to ebuild> digest
+
