@@ -15,8 +15,8 @@ class EmergeGem
   def initialize( argv )
     @gems = []
     @emerge_options = []
-    @portage_base_dir = '/usr/local/portage'
-    @portage_path = 'dev-ruby'
+    portage_base_dir = '/usr/local/portage'
+    portage_path = 'dev-ruby'
 
     collecting_emerge_options = false
     while argv.any?
@@ -27,9 +27,9 @@ class EmergeGem
       when '-h', '--help'
         print_usage_and_exit
       when '--portage-base-dir'
-        @portage_base_dir = arg
+        portage_base_dir = arg
       when '--portage-path'
-        @portage_path = arg
+        portage_path = arg
       else
         if collecting_emerge_options
           @emerge_options << arg
