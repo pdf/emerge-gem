@@ -58,7 +58,7 @@ SRC_URI="<%= uri %>"
 
 LICENSE="MIT"
 SLOT="0"
-KEYWORDS=""
+KEYWORDS="x86"
 IUSE=""
 RESTRICT="test"
 
