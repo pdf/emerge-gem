@@ -56,12 +56,12 @@ class EmergeGem
 
   def check_local_gems
     @gems.each do |gem|
-      gem_installed = system( "gem list -l #{gem} | egrep '^#{gem}'" )
-      eix_installed = system( 'which eix' )
+      gem_installed = system( "gem list -l #{gem} | egrep '^#{gem} ' > /dev/null" )
+      eix_installed = system( 'which eix > /dev/null' )
       next  if ! gem_installed || ! eix_installed
 
       puts "(checking if #{gem} has been installed with Portage)"
-      package_installed = system( "eix -Ie --only-names #{gem} | egrep '#{gem}$'" )
+      package_installed = system( "eix -Ie --only-names #{gem} | egrep '#{gem}$' > /dev/null" )
       next  if package_installed
 
       puts "#{gem} seems to be installed via gem and not Portage."
