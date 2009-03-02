@@ -47,10 +47,30 @@ class EmergeGem
   end
 
   def run
+    check_local_gems
     gather_ebuilds
     write_ebuilds
     digest_ebuilds
     emerge
+  end
+
+  def check_local_gems
+    @gems.each do |gem|
+      gem_installed = system( "gem list -l #{gem} | egrep '^#{gem}'" )
+      eix_installed = system( 'which eix' )
+      next  if ! gem_installed || ! eix_installed
+
+      puts "(checking if #{gem} has been installed with Portage)"
+      package_installed = system( "eix -Ie --only-names #{gem} | egrep '#{gem}$'" )
+      next  if package_installed
+
+      puts "#{gem} seems to be installed via gem and not Portage."
+      puts "Uninstall the #{gem} gem before emerging?  [y/n]"
+      answer = $stdin.gets.strip
+      if answer =~ /^y/i
+        shell "gem uninstall #{gem}"
+      end
+    end
   end
 
   def gather_ebuilds
