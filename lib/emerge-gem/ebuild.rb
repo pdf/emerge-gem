@@ -1,7 +1,7 @@
 class Ebuild
-  attr_accessor :spec, :source, :dependencies
+  attr_accessor :spec, :source, :dependencies, :local_path
 
-  def initialize(spec_pair)
+  def initialize( spec_pair )
     @spec, @source = spec_pair
     @dependencies = []
   end
@@ -17,12 +17,13 @@ class Ebuild
   def pn
     spec.name.downcase
   end
+  alias :name :pn
 
   def pv
     spec.version.version
   end
 
-  def atom_of(dependency)
+  def atom_of( dependency )
     "dev-ruby/#{dependency.name}"
   end
 
@@ -30,10 +31,13 @@ class Ebuild
     "#{source}/gems/#{p}.gem"
   end
 
-  def write
+  def write( target_dir = 'ebuilds' )
+    FileUtils.mkdir_p target_dir
     output = eruby.result( binding )
-    FileUtils.mkdir_p('ebuilds')
-    File.open("ebuilds/#{filename}", 'w') {|f| f.write(output) }
+    @local_path = "#{target_dir}/#{filename}"
+    File.open( @local_path, 'w' ) do |f|
+      f.write output
+    end
   end
 
   protected
@@ -69,9 +73,9 @@ DEPEND="
     @eruby
   end
 
-  def self.create_from_spec_lookup(package)
+  def self.create_from_spec_lookup( package )
     @@inst ||= Gem::DependencyInstaller.new
-    spec_pair = @@inst.find_spec_by_name_and_version(package).first
-    self.new(spec_pair)
+    spec_pair = @@inst.find_spec_by_name_and_version( package ).first
+    self.new( spec_pair )
   end
 end
