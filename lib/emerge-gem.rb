@@ -9,6 +9,7 @@ class EmergeGem
     puts "    -h --help              show usage"
     puts "    --portage-base-dir     (default /usr/local/portage)"
     puts "    --portage-path         relative to portage base dir (default dev-ruby)"
+    puts "    --verbose              print more details about work being done"
     exit 1
   end
 
@@ -30,6 +31,8 @@ class EmergeGem
         portage_base_dir = arg
       when '--portage-path'
         portage_path = arg
+      when '-v', '--verbose'
+        @verbose = true
       else
         if collecting_emerge_options
           @emerge_options << arg
@@ -44,11 +47,16 @@ class EmergeGem
     end
 
     @ebuild_dest ||= "#{portage_base_dir}/#{portage_path}"
+
+    @eix_installed = system( 'which eix > /dev/null' )
+    if @verbose && @eix_installed
+      puts "eix detected"
+    end
   end
 
   def run
-    check_local_gems
     gather_ebuilds
+    check_local_gems
     write_ebuilds
     digest_ebuilds
     emerge
@@ -56,13 +64,12 @@ class EmergeGem
 
   def check_local_gems
     @gems.each do |gem|
-      gem_installed = system( "gem list -l #{gem} | egrep '^#{gem} ' > /dev/null" )
-      eix_installed = system( 'which eix > /dev/null' )
-      next  if ! gem_installed || ! eix_installed
+      next  if ! EmergeGem.gem_installed?( gem ) || ! eix_installed
+      if @verbose; puts "#{gem} gem installed"; end
 
       puts "(checking if #{gem} has been installed with Portage)"
-      package_installed = system( "eix -Ie --only-names #{gem} | egrep '#{gem}$' > /dev/null" )
-      next  if package_installed
+      next  if EmergeGem.package_installed? gem
+      if @verbose; puts "#{gem} package not installed with Portage"; end
 
       puts "#{gem} seems to be installed via gem and not Portage."
       puts "Uninstall the #{gem} gem before emerging?  [y/n]"
@@ -71,6 +78,14 @@ class EmergeGem
         shell "gem uninstall #{gem}"
       end
     end
+  end
+
+  def self.gem_installed?( gem_name )
+    system "gem list -l #{gem_name} | egrep '^#{gem_name} ' > /dev/null"
+  end
+
+  def self.package_installed?( package_name )
+    system "eix -Ie --only-names #{package_name} | egrep '#{package_name}$' > /dev/null"
   end
 
   def gather_ebuilds
@@ -108,7 +123,7 @@ class EmergeGem
 
   def emerge
     ebuild_names = @ebuilds.values.map { |e| e.name }.join( ' ' )
-    shell "emerge #{@emerge_options} #{ebuild_names}"
+    shell "emerge #{@emerge_options.join( ' ' )} #{ebuild_names}"
   end
 
   def shell( command )
