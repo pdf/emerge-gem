@@ -1,3 +1,33 @@
-== emerge-gem
+## emerge-gem
 
 Goal: Transparently install gems into Portage.  Should be as easy as "emerge-gem gemname".
+
+### Setup
+
+  gem install Pistos-emerge-gem --source http://gems.github.com
+
+In /etc/make.conf set (or append to) PORTDIR_OVERLAY:
+
+  PORTDIR_OVERLAY=/usr/local/portage
+
+### Usage
+
+  emerge-gem rack -- -atv
+
+emerge-gem will also determine gem dependencies and emerge them, too.
+
+
+
+### Notes
+
+USE emerge-gem AT YOUR OWN RISK! It is still very much alpha software as of
+2009-03-01.  If you have been using the gem command to install gems outside of
+Portage's control, you are advised to make use of "gem list -l" and
+"gem uninstall" to check for and remove previously installed gems.  This lets
+Portage operate with a clean slate.  After you emerge-gem, you can use
+"gem list -l gemname" to verify that emerge-gem installed the gem correctly.
+
+emerge-gem works by using the Rubygems system/library to find gem sources and
+dependencies, and to automatically create wrapper ebuilds for them.  It then
+issues an emerge command.  By default, it uses the local overlay.  Use --help
+for CLI switches you can use to specify directories.
