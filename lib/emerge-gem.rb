@@ -76,7 +76,7 @@ class EmergeGem
   def write_ebuilds
     @ebuilds.each do |name, ebuild|
       puts "Writing out #{ebuild.filename}"
-      ebuild.write
+      ebuild.write @ebuild_dest
     end
   end
 
@@ -87,7 +87,7 @@ class EmergeGem
   end
 
   def emerge
-    ebuild_names = @ebuilds.map { |e| e.name }.join( ' ' )
+    ebuild_names = @ebuilds.values.map { |e| e.name }.join( ' ' )
     shell "emerge #{@emerge_options} #{ebuild_names}"
   end
 

@@ -32,9 +32,10 @@ class Ebuild
   end
 
   def write( target_dir = 'ebuilds' )
-    FileUtils.mkdir_p target_dir
+    ebuild_dir = "#{target_dir}/#{name}"
+    FileUtils.mkdir_p ebuild_dir
     output = eruby.result( binding )
-    @local_path = "#{target_dir}/#{filename}"
+    @local_path = "#{ebuild_dir}/#{filename}"
     File.open( @local_path, 'w' ) do |f|
       f.write output
     end
