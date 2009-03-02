@@ -92,7 +92,7 @@ class EmergeGem
   end
 
   def shell( command )
-    puts command
+    puts "\033[1m#{command}\033[0m"
     system( command ) or
       exit $?
   end
