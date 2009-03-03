@@ -1,6 +1,7 @@
 ## emerge-gem
 
-Goal: Transparently install gems into Portage.  Should be as easy as "emerge-gem gemname".
+Goal: Transparently install gems into Portage.
+It should be as easy as "emerge-gem gemname".
 
 ### Setup
 
@@ -12,30 +13,37 @@ In /etc/make.conf set (or append to) PORTDIR_OVERLAY:
 
 ### Usage
 
-  emerge-gem rack -- -atv
+  emerge-gem gemname -- -atv
 
 emerge-gem will also determine gem dependencies and emerge them, too.
-
 
 
 ### Notes
 
 USE emerge-gem AT YOUR OWN RISK! It is still very much alpha software as of
-2009-03-01.
+2009-03-02.
 
-If you have been using the gem command to install gems outside of Portage's
-control, you are advised to make use of "gem list -l" and "gem uninstall" to
-check for and remove previously installed gems.  This lets Portage operate with
-a clean slate.  After you emerge-gem, you can use "gem list -l gemname" to
-verify that emerge-gem installed the gem correctly.  You can emerge eix to
-automate this check; emerge-gem will use eix if found.
+It is recommended to emerge eix, which makes package searching extremely fast.
+emerge-gem will use eix, if it is found, to scan for Portage gem installations,
+check for possible problems, and prompt you to confirm recommended actions.
+Without eix, you'll need to take care of Portage-Rubygems inconsistencies
+yourself.
 
 emerge-gem works by using the Rubygems system/library to find gem sources and
 dependencies, and to automatically create wrapper ebuilds for them.  It then
 issues an emerge command.  By default, it uses the local overlay.  Use --help
 for CLI switches you can use to specify directories.
 
+### Without eix
+
+If you have been using the gem command to install gems outside of Portage's
+control, you are advised to make use of "gem list -l" and "gem uninstall" to
+check for and remove previously installed gems.  This lets Portage operate with
+a clean slate.  After you emerge-gem, you can use "gem list -l gemname" to
+verify that emerge-gem installed the gem correctly.
+
 You should also note that if you have installed a gem via Portage in the past,
 and later upgraded it with Rubygems, emerge will complain about file collisions
 if you have collision-protect enabled in your /etc/make.conf.  To deal with this,
-uninstall the gem using Rubygems first.
+uninstall with Rubygems all versions of the gem except the one matching the
+Portage version.
