@@ -72,7 +72,6 @@ class EmergeGem
       next  if ! EmergeGem.gem_installed?( gem ) || ! @eix_installed
       inform "#{gem} gem installed"
 
-      puts "(checking if #{gem} has been installed with Portage)"
       next  if EmergeGem.package_installed? gem
       inform "#{gem} package not installed with Portage"
 
@@ -81,6 +80,8 @@ class EmergeGem
       answer = $stdin.gets.strip
       if answer =~ /^y/i
         shell "gem uninstall #{gem}"
+      else
+        puts "(not uninstalling #{gem} gem)"
       end
     end
   end

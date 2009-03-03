@@ -34,3 +34,8 @@ emerge-gem works by using the Rubygems system/library to find gem sources and
 dependencies, and to automatically create wrapper ebuilds for them.  It then
 issues an emerge command.  By default, it uses the local overlay.  Use --help
 for CLI switches you can use to specify directories.
+
+You should also note that if you have installed a gem via Portage in the past,
+and later upgraded it with Rubygems, emerge will complain about file collisions
+if you have collision-protect enabled in your /etc/make.conf.  To deal with this,
+uninstall the gem using Rubygems first.
