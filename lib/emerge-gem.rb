@@ -18,7 +18,7 @@ class EmergeGem
     @gems = []
     @emerge_options = []
     portage_base_dir = '/usr/local/portage'
-    portage_path = 'dev-ruby'
+    @portage_path = 'dev-ruby'
 
     collecting_emerge_options = false
     while argv.any?
@@ -33,7 +33,7 @@ class EmergeGem
       when '--portage-base-dir'
         portage_base_dir = arg
       when '--portage-path'
-        portage_path = arg
+        @portage_path = arg
       when '-v', '--verbose'
         @verbose = true
         puts "(verbose mode)"
@@ -50,7 +50,7 @@ class EmergeGem
       print_usage_and_exit
     end
 
-    @ebuild_dest ||= "#{portage_base_dir}/#{portage_path}"
+    @ebuild_dest ||= "#{portage_base_dir}/#{@portage_path}"
 
     @eix_installed = system( 'which eix > /dev/null' )
     if @eix_installed
@@ -67,27 +67,50 @@ class EmergeGem
   end
 
   def check_local_gems
+    return  if ! @eix_installed
     @gems.each do |gem|
       inform "Checking installation of #{gem}"
-      next  if ! EmergeGem.gem_installed?( gem ) || ! @eix_installed
+      gem_versions = EmergeGem.gem_versions_installed( gem )
+      next  if gem_versions.empty?
       inform "#{gem} gem installed"
 
-      next  if EmergeGem.package_installed? gem
-      inform "#{gem} package not installed with Portage"
+      package_version = EmergeGem.portage_version_installed( gem )
+      if package_version
+        next  if gem_versions.include?( package_version )
 
-      puts "#{gem} seems to be installed via gem and not Portage."
-      puts "Uninstall the #{gem} gem before emerging?  [y/n]"
-      answer = $stdin.gets.strip
-      if answer =~ /^y/i
-        shell "gem uninstall #{gem}"
+        puts "Portage version of #{gem} is #{package_version} but Rubygems reports version(s):"
+        puts gem_versions.join( ', ' )
+        puts "Sync Rubygem installation with Portage's version? [y/n]"
+        answer = $stdin.gets.strip
+        if answer =~ /^y/i
+          shell "gem uninstall -a -x -I #{gem}"
+          shell "gem install -v #{package_version} #{gem}"
+        else
+          puts "(retaining differing gem installation of #{gem})"
+        end
       else
-        puts "(not uninstalling #{gem} gem)"
+        puts "#{gem} seems to be installed via gem and not Portage."
+        puts "Uninstall the #{gem} gem before emerging?  [y/n]"
+        answer = $stdin.gets.strip
+        if answer =~ /^y/i
+          shell "gem uninstall #{gem}"
+        else
+          puts "(not uninstalling #{gem} gem)"
+        end
       end
     end
   end
 
+  def self.gem_versions_installed( gem_name )
+    Gem.source_index.find_name( gem_name ).map { |gem| gem.version }
+  end
+
   def self.gem_installed?( gem_name )
-    system "gem list -l #{gem_name} | egrep '^#{gem_name} ' > /dev/null"
+    gem_versions_installed( gem_name ).any?
+  end
+
+  def self.portage_version_installed( gem_name )
+    `eix -Ienc* #{gem_name}`[ /#{gem_name} \([0-9.]+\[/, 1 ]
   end
 
   def self.package_installed?( package_name )
@@ -129,7 +152,7 @@ class EmergeGem
 
   def emerge
     ebuild_names = @ebuilds.values.map { |e| e.name }.join( ' ' )
-    command = "emerge #{@emerge_options.join( ' ' )} #{ebuild_names}"
+    command = "emerge #{@emerge_options.join( ' ' )} #{@portage_path}/#{ebuild_names}"
     if @no_emerge
       puts "(would execute: #{command})"
     else
