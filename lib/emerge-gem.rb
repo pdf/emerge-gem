@@ -91,8 +91,9 @@ class EmergeGem
 
   def gather_ebuilds
     @ebuilds = {}
-    while @gems.any?
-      next_package = @gems.shift
+    gems = @gems.dup
+    while gems.any?
+      next_package = gems.shift
 
       if ! @ebuilds[ next_package ]
         inform "Gathering info about #{next_package} gem..."
@@ -101,7 +102,8 @@ class EmergeGem
 
       @ebuilds[ next_package ].spec.dependencies.each do |dependency|
         next  if @ebuilds[ dependency.name ]
-        puts "Need to lookup dependency #{dependency.name}"
+        inform "  Looking up dependency #{dependency.name}"
+        gems.push dependency.name
         @gems.push dependency.name
       end
     end
