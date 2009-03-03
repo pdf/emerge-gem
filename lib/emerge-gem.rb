@@ -110,7 +110,7 @@ class EmergeGem
   end
 
   def self.portage_version_installed( gem_name )
-    `eix -Ienc* #{gem_name}`[ /#{gem_name} \([0-9.]+\[/, 1 ]
+    `eix -Ien* --format '<installedversionsshort>' #{gem_name}`[ /([0-9.]+)/, 1 ]
   end
 
   def self.package_installed?( package_name )
