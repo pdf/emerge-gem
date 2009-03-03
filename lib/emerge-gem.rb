@@ -7,6 +7,7 @@ class EmergeGem
   def print_usage_and_exit
     puts "#{$0} [options] <gem name> [gem name...] [-- <emerge options>]"
     puts "    -h --help              show usage"
+    puts "    --no-emerge            don't actually execute any emerge commands"
     puts "    --portage-base-dir     (default /usr/local/portage)"
     puts "    --portage-path         relative to portage base dir (default dev-ruby)"
     puts "    --verbose              print more details about work being done"
@@ -27,12 +28,15 @@ class EmergeGem
         collecting_emerge_options = true
       when '-h', '--help'
         print_usage_and_exit
+      when '--no-emerge'
+        @no_emerge = true
       when '--portage-base-dir'
         portage_base_dir = arg
       when '--portage-path'
         portage_path = arg
       when '-v', '--verbose'
         @verbose = true
+        puts "(verbose mode)"
       else
         if collecting_emerge_options
           @emerge_options << arg
@@ -124,7 +128,12 @@ class EmergeGem
 
   def emerge
     ebuild_names = @ebuilds.values.map { |e| e.name }.join( ' ' )
-    shell "emerge #{@emerge_options.join( ' ' )} #{ebuild_names}"
+    command = "emerge #{@emerge_options.join( ' ' )} #{ebuild_names}"
+    if @no_emerge
+      puts "(would execute: #{command})"
+    else
+      shell command
+    end
   end
 
   def shell( command )
