@@ -151,8 +151,8 @@ class EmergeGem
   end
 
   def emerge
-    ebuild_names = @ebuilds.values.map { |e| e.name }.join( ' ' )
-    command = "emerge #{@emerge_options.join( ' ' )} #{@portage_path}/#{ebuild_names}"
+    ebuild_names = @ebuilds.values.map { |e| "#{@portage_path}/#{e.name}" }.join( ' ' )
+    command = "emerge #{@emerge_options.join( ' ' )} #{ebuild_names}"
     if @no_emerge
       puts "(would execute: #{command})"
     else
