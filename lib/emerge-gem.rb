@@ -49,8 +49,8 @@ class EmergeGem
     @ebuild_dest ||= "#{portage_base_dir}/#{portage_path}"
 
     @eix_installed = system( 'which eix > /dev/null' )
-    if @verbose && @eix_installed
-      puts "eix detected"
+    if @eix_installed
+      inform "eix detected"
     end
   end
 
@@ -64,12 +64,13 @@ class EmergeGem
 
   def check_local_gems
     @gems.each do |gem|
-      next  if ! EmergeGem.gem_installed?( gem ) || ! eix_installed
-      if @verbose; puts "#{gem} gem installed"; end
+      inform "Checking installation of #{gem}"
+      next  if ! EmergeGem.gem_installed?( gem ) || ! @eix_installed
+      inform "#{gem} gem installed"
 
       puts "(checking if #{gem} has been installed with Portage)"
       next  if EmergeGem.package_installed? gem
-      if @verbose; puts "#{gem} package not installed with Portage"; end
+      inform "#{gem} package not installed with Portage"
 
       puts "#{gem} seems to be installed via gem and not Portage."
       puts "Uninstall the #{gem} gem before emerging?  [y/n]"
@@ -94,10 +95,8 @@ class EmergeGem
       next_package = @gems.shift
 
       if ! @ebuilds[ next_package ]
-        puts "Gathering info about #{next_package}..."
+        inform "Gathering info about #{next_package} gem..."
         @ebuilds[ next_package ] = Ebuild.create_from_spec_lookup( next_package )
-      else
-        puts "(already know about #{next_package})"
       end
 
       @ebuilds[ next_package ].spec.dependencies.each do |dependency|
@@ -110,7 +109,7 @@ class EmergeGem
 
   def write_ebuilds
     @ebuilds.each do |name, ebuild|
-      puts "Writing out #{ebuild.filename}"
+      inform "Writing out #{ebuild.filename}"
       ebuild.write @ebuild_dest
     end
   end
@@ -130,6 +129,11 @@ class EmergeGem
     puts "\033[1m#{command}\033[0m"
     system( command ) or
       exit $?
+  end
+
+  def inform( message )
+    return  if ! @verbose
+    puts message
   end
 end
 
