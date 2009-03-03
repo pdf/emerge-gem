@@ -102,7 +102,7 @@ class EmergeGem
   end
 
   def self.gem_versions_installed( gem_name )
-    Gem.source_index.find_name( gem_name ).map { |gem| gem.version }
+    Gem.source_index.find_name( gem_name ).map { |gem| gem.version.to_s }
   end
 
   def self.gem_installed?( gem_name )
