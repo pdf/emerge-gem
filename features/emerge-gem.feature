@@ -1,6 +1,6 @@
 Feature: Emerge gems
-  In order to avoid waiting for downstream package maintainers
   As a Gentoo user
+  In order to avoid waiting for downstream package maintainers
   I want to be able to emerge gems
 
   Scenario: Emerge a single gem

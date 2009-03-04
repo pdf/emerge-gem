@@ -45,8 +45,9 @@ dir = "#{doc_dir}/#{versioned_package}"
 shell "mkdir -p #{dir}"
 shell "cp README LICENCE #{dir}"
 
+shell "cp -r lib/emerge-gem.rb #{lib_dir}/"
 dir = "#{lib_dir}/emerge-gem"
 shell "mkdir -p #{dir}"
-shell "cp -r lib/* #{dir}/"
+shell "cp -r lib/emerge-gem/* #{dir}/"
 
 shell "install bin/emerge-gem #{bin_dir}"

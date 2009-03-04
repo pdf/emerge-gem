@@ -7,7 +7,7 @@ It should be as easy as "emerge-gem gemname".
 
 git clone git://github.com/Pistos/emerge-gem.git
 OR
-wget http://purepistos.net/emerge-gem-0.3.7.tar.bz2
+wget http://purepistos.net/emerge-gem-0.3.8.tar.bz2
 
 ### Installation
 
