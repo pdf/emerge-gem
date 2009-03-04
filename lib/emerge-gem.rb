@@ -68,6 +68,12 @@ class EmergeGem
     emerge
   end
 
+  def self.non_portage_gems
+    `gem list -l`.scan( /^(\S+) / ).reject { |gem|
+      package_installed?( gem )
+    }
+  end
+
   def check_local_gems
     return  if ! @eix_installed
     @gems.each do |gem|
@@ -116,7 +122,7 @@ class EmergeGem
   end
 
   def self.package_installed?( package_name )
-    system "eix -Ie --only-names #{package_name} | egrep '#{package_name}$' > /dev/null"
+    !!portage_version_installed( package_name )
   end
 
   def gather_ebuilds

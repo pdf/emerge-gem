@@ -51,3 +51,4 @@ shell "mkdir -p #{dir}"
 shell "cp -r lib/emerge-gem/* #{dir}/"
 
 shell "install bin/emerge-gem #{bin_dir}"
+shell "install bin/emerge-gem-scan #{bin_dir}"

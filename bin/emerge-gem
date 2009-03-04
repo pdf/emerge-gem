@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-# Usage: emerge-gem [emerge options] gemname
+# emerge-gem --help
 
 
 require 'rubygems'

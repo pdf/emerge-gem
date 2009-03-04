@@ -41,6 +41,9 @@ Example:
 
   emerge-gem ramaze -- -atv
 
+You can scan your system for gems installed outside of Portage with:
+
+  emerge-gem-scan
 
 ### Notes
 
@@ -51,7 +54,10 @@ It is recommended to emerge eix, which makes package searching extremely fast.
 emerge-gem will use eix, if it is found, to scan for Portage gem installations,
 check for possible problems, and prompt you to confirm recommended actions.
 Without eix, you'll need to take care of Portage-Rubygems inconsistencies
-yourself.
+yourself.  Note that you'll need to run update-eix to keep eix up-to-date after
+you run emerge-gem.  If you don't, eix won't know about the gems you install
+into the local overlay (/usr/local/portage), and will continue to report them
+as "installed with RubyGems outside of Portage".
 
 emerge-gem works by using the Rubygems system/library to find gem sources and
 dependencies, and to automatically create wrapper ebuilds for them.  It then
