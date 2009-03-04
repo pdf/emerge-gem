@@ -4,7 +4,7 @@ require 'erb'
 require 'emerge-gem/ebuild'
 
 class EmergeGem
-  VERSION = "0.3.8"
+  VERSION = "0.3.9"
 
   def print_usage_and_exit
     puts "#{$0} [options] <gem name> [gem name...] [-- <emerge options>]"

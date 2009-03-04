@@ -3,11 +3,24 @@
 Goal: Transparently install gems into Portage.
 It should be as easy as "emerge-gem gemname".
 
+### Dependencies
+
+Required:
+
+* Portage
+* RubyGems
+
+Optional:
+
+* emerge eix
+* gem install cucumber   # for emerge-gem tests
+* gem install bacon      # for emerge-gem tests
+
 ### Download
 
 git clone git://github.com/Pistos/emerge-gem.git
 OR
-wget http://purepistos.net/emerge-gem-0.3.8.tar.bz2
+wget http://purepistos.net/emerge-gem-0.3.9.tar.bz2
 
 ### Installation
 
