@@ -5,8 +5,11 @@ require 'emerge-gem'
 
 def shell( command )
   puts command
-  system( command ) or
-    puts "Command error: #{$?}" and exit 1
+  success = system( command )
+  if ! success
+    puts "Command error: #{$?}"
+    exit 1
+  end
 end
 
 prefix = '/usr'
