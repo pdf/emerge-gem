@@ -6,7 +6,7 @@ Given /I want to install (\w+)/ do |gem_name|
 end
 
 When /I run emerge-gem (\w+)/ do |gem_name|
-  @emerge_gem = EmergeGem.new( ARGV.dup )
+  @emerge_gem = EmergeGem.new( [ gem_name ] )
   @emerge_gem.run
 end
 
