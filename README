@@ -24,7 +24,7 @@ wget http://purepistos.net/emerge-gem-0.3.9.tar.bz2
 
 ### Installation
 
-./install.sh
+ruby install.rb
 
 ### Setup
 
