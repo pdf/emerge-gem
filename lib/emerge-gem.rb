@@ -44,6 +44,9 @@ class EmergeGem
       when '-v', '--verbose'
         @verbose = true
         puts "(verbose mode)"
+      when '--version'
+        puts "emerge-gem #{VERSION}"
+        exit 0
       else
         if collecting_emerge_options
           @emerge_options << arg
