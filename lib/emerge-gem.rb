@@ -4,15 +4,17 @@ require 'erb'
 require 'emerge-gem/ebuild'
 
 class EmergeGem
-  VERSION = "0.3.9"
+  VERSION = "0.4.0"
 
   def print_usage_and_exit
-    puts "#{$0} [options] <gem name> [gem name...] [-- <emerge options>]"
-    puts "    -h --help              show usage"
-    puts "    --no-emerge            don't actually execute any emerge commands"
-    puts "    --portage-base-dir     (default /usr/local/portage)"
-    puts "    --portage-path         relative to portage base dir (default dev-ruby)"
-    puts "    --verbose              print more details about work being done"
+    puts "#{$0} [options] <gem name> [gem name...] [-- <emerge/paludis options>]"
+    puts "    -h --help                       show usage"
+    puts "    --no-emerge                     don't actually execute any emerge/paludis commands"
+    puts "    --no-paludis                    don't actually execute any paludis/emerge commands"
+    puts "    --emerge-bin <emerge|paludis>   use a specific Portage tool instead of emerge"
+    puts "    --portage-base-dir <path>       (default /usr/local/portage)"
+    puts "    --portage-path <path>           relative to portage base dir (default dev-ruby)"
+    puts "    --verbose                       print more details about work being done"
     exit 1
   end
 
@@ -21,6 +23,7 @@ class EmergeGem
     @emerge_options = []
     portage_base_dir = '/usr/local/portage'
     @portage_path = 'dev-ruby'
+    @emerge_command = 'emerge'
 
     collecting_emerge_options = false
     while argv.any?
@@ -30,12 +33,14 @@ class EmergeGem
         collecting_emerge_options = true
       when '-h', '--help'
         print_usage_and_exit
-      when '--no-emerge'
+      when '--no-emerge', '--no-paludis'
         @no_emerge = true
       when '--portage-base-dir'
-        portage_base_dir = arg
+        portage_base_dir = argv.shift
       when '--portage-path'
-        @portage_path = arg
+        @portage_path = argv.shift
+      when '--emerge-bin'
+        @emerge_command = argv.shift
       when '-v', '--verbose'
         @verbose = true
         puts "(verbose mode)"
@@ -160,7 +165,7 @@ class EmergeGem
 
   def emerge
     ebuild_names = @ebuilds.values.map { |e| "#{@portage_path}/#{e.name}" }.join( ' ' )
-    command = "emerge #{@emerge_options.join( ' ' )} #{ebuild_names}"
+    command = "#{@emerge_command} #{@emerge_options.join( ' ' )} #{ebuild_names}"
     if @no_emerge
       puts "(would execute: #{command})"
     else
