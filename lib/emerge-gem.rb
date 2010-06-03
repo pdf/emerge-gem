@@ -4,7 +4,7 @@ require 'erb'
 require 'emerge-gem/ebuild'
 
 class EmergeGem
-  VERSION = "0.4.0"
+  VERSION = "0.5.0"
 
   def print_usage_and_exit
     puts "#{$0} [options] <gem name> [gem name...] [-- <emerge/paludis options>]"
@@ -21,7 +21,7 @@ class EmergeGem
   def initialize( argv )
     @gems = []
     @emerge_options = []
-    portage_base_dir = '/usr/local/portage'
+    portage_base_dir = '/shared/portage/overlay'
     @portage_path = 'dev-ruby'
     @emerge_command = 'emerge'
 
@@ -126,7 +126,8 @@ class EmergeGem
   end
 
   def self.portage_version_installed( gem_name )
-    `eix -Ien* --format '<installedversionsshort>' #{gem_name}`[ /([0-9.]+)/, 1 ]
+	@portage_path ||= 'dev-ruby'
+    `eix -Ien* --format '<installedversionsshort>' #{@portage_path}/#{gem_name}`[ /([0-9.]+)/, 1 ]
   end
 
   def self.package_installed?( package_name )

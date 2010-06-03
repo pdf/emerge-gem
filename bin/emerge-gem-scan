@@ -5,3 +5,4 @@ require 'emerge-gem'
 
 puts "Gems installed with RubyGems, but not with Portage:"
 puts EmergeGem.non_portage_gems.join( "\n" )
+

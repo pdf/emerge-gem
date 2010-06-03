@@ -15,7 +15,7 @@ class Ebuild
   end
 
   def pn
-    spec.name.downcase
+    spec.name
   end
   alias :name :pn
 
@@ -46,21 +46,26 @@ class Ebuild
   def eruby
     unless @eruby
       @eruby = ERB.new( %{
-# Copyright 1999-2009 Gentoo Foundation
+# Copyright 1999-2010 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
-inherit gems
+EAPI=2
+USE_RUBY="ruby18 ruby19 jruby"
+
+RUBY_FAKEGEM_TASK_DOC=""
+RUBY_FAKEGEM_EXTRADOC=""
+
+inherit ruby-fakegem eutils
 
 DESCRIPTION="<%= spec.summary %>"
 HOMEPAGE="<%= spec.homepage %>"
 SRC_URI="<%= uri %>"
 
-LICENSE="MIT"
+LICENSE="Ruby"
 SLOT="0"
-KEYWORDS="x86"
+KEYWORDS="amd64 ia64 ppc64 x86"
 IUSE=""
-RESTRICT="test"
 
 <% unless spec.dependencies.empty? %>
 DEPEND="
